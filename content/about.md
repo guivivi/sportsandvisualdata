@@ -7,7 +7,7 @@ output: html_document
 
 ## Hola Mundo
 
-Esta página web surge con el objetivo de divulgar diferentes análisis de datos, relacionados en su mayoría con el baloncesto, pero también con otros deportes y otros ámbitos industriales. En cada estudio se hará especial enfásis en la visualización de los resultados, con gráficos que ayuden a obtener la mayor información posible de una manera fácil e intuitiva. Las entradas de la web estarán escritas en español o en inglés. Con el fin de contribuir al desarrollo de software libre, el código y los datos para reproducir los resultados estarán disponibles.
+Esta página web surge con el objetivo de divulgar diferentes análisis de datos, relacionados en su mayoría con el baloncesto, pero también con otros deportes y otros ámbitos industriales. En cada estudio se hará especial énfasis en la visualización de los resultados, con gráficos que ayuden a obtener la mayor información posible de una manera fácil e intuitiva. Las entradas de la web estarán escritas en español o en inglés. Con el fin de contribuir al desarrollo de software libre, el código y los datos para reproducir los resultados estarán disponibles.
 
 ## Hello World
 

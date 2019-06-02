@@ -352,4 +352,4 @@ Por último, entre los jugadores que han empeorado más su rendimiento se encuen
 
 ## Datos y software
 
-El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata)
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
