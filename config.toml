@@ -1,0 +1,38 @@
+baseurl = "https://www.sportsandvisualdata.com/"
+languageCode = "en-us"
+title = "Análisis and visualización de datos"
+theme = "hugo-lithium"
+googleAnalytics = ""
+disqusShortname = ""
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+[[menu.main]]
+    name = "Dashboard"
+    url = "https://www.uv.es/vivigui/AppEuroACB.html"
+[[menu.main]]
+    name = "R package"
+    url = "https://CRAN.R-project.org/package=BAwiR"
+[[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/guivivi/sportsandvisualdata"
+[[menu.main]]
+    name = "Author's web"
+    url = "https://www.uv.es/vivigui"
+
+[params]
+    description = "Una página web para la visualización de datos de deporte y otros ámbitos."
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.12.0"
+    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    MathJaxVersion = "2.7.5"
