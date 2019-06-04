@@ -2,7 +2,7 @@ baseurl = "https://www.sportsandvisualdata.com/"
 languageCode = "en-us"
 title = "Data analysis and visualization"
 theme = "hugo-lithium"
-googleAnalytics = ""
+googleAnalytics = "UA-135898230-2"
 disqusShortname = ""
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
