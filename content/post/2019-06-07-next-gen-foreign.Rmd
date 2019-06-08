@@ -1,0 +1,582 @@
+---
+title: La Next-Gen de jugadores extranjeros en el baloncesto español. Análisis de su evolución.
+author: Guillermo Vinue
+date: '2019-06-07'
+slug: next-gen-foreign
+categories: ["R"]
+tags: ["valoración", "evolución", "jóvenes"]
+---
+
+```{r tables, include=FALSE,message=FALSE}
+knitr::opts_knit$set(bookdown.internal.label = FALSE)
+```
+
+<br>
+
+* Siguiendo el análisis realizado [para la nueva generación de jugadores españoles](https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/), este estudio investiga la evolución de los jugadores extranjeros nacidos a partir de 1993, que han jugado al menos dos temporadas en la Liga Endesa ACB. 
+
+* Diagne, Poirier, Eriksson, Vildoza y Cvetkovic muestran la mejora más relevante. Por su parte, Beqa Burjanadze ha repetido sus buenos números de la temporada pasada. Entre los jugadores más jóvenes, destaca el progreso de Cancar, Cate, Dimitrijevic y Sakho.
+
+Para desarrollar este análisis, se discute para cada jugador su valoración en promedio y en cada partido de todas sus temporadas. Los jugadores seleccionados son Romaric Belemene, Simon Birgander, Nico Brussino, Beqa Burjanadze, Vlatko Cancar, Emanuel Cate, Aleksandar Cvetkovic, Moussa Diagne, Nenad Dimitrijevic, Marcus Eriksson, Patricio Garino, Ludde Hakanson, Tryggvi Hlinason, Mamadou Diagne, Kevin Pangos, Vincent Poirier, Nikola Radicevic, Dino Radoncic, Lucio Redivo, Luka Rupnik, Jordan Sakho, Tadas Sedekerskis, Rolands Smits, Matt Thomas, Mike Tobey, Dejan Todorovic, Luca Vildoza y David Walker.
+
+Para cada jugador, las siguientes pestañas muestran (haciendo clic sobre su nombre): (i) una tabla con el número de partidos, los minutos por partido y la valoración media en cada temporada; (ii) un gráfico con todas las valoraciones en cada una de las temporadas y equipos en que ha jugado en la liga. Las valoraciones están divididas en cuatro intervalos que aparecen con distintos colores. El número de veces que el jugador consiguió cada valoración se indica entre paréntesis. 
+
+```{r packages, include=FALSE,message=FALSE}
+# Load packages:
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+```
+
+```{r data, include=FALSE}
+# Load data and source functions:
+load("data_scripts/data_app_acb.RData")
+source("data_scripts/plot_pir_interv.R")
+source("data_scripts/table_mp_pir.R")
+```
+
+```{r ACB-data-and-players, include=FALSE}
+# Get ACB data:
+df01 <- data_app_acb %>% 
+  filter(Compet == "ACB", Type_season == "Regular Season")
+
+# Select players of interest:
+players <- c("Belemene, Romaric", "Birgander, Simon", "Brussino, Nico", "Burjanadze_Beqa", 
+             "Cancar, Vlatko", "Cate, Emanuel", "Cvetkovic, A.", "Diagne, Moussa", 
+             "Dimitrijevic, N.", "Eriksson, Marcus", "Garino, Patricio", "Hakanson, Ludde",
+             "Hlinason, T.", "Niang, Mamadou", "Pangos, Kevin", "Poirier, Vincent", 
+             "Radicevic, Nikola", "Radoncic, Dino", "Redivo, Lucio", "Rupnik, Luka", 
+             "Sakho, Jordan", "Sedekerskis, Tadas", "Smits, Rolands", "Thomas, Matt", 
+             "Tobey, Mike", "Todorovic, Dejan", "Vildoza, Luca", "Walker, David")
+
+# Compute total and averaged minutes and PIR:
+df02 <- df01 %>% 
+  filter(Player.x %in% players) %>%
+  group_by(Season, Player.x, CombinID) %>%
+  mutate(GP = n()) %>%
+  mutate(MP_oper = ifelse(all(MP == "0"), 
+                          0,
+                          sum(as.numeric(as.period(ms(MP), unit = "sec")), na.rm = TRUE))) %>%
+  mutate(MP_oper_def = sprintf("%02d:%02d", MP_oper %/% 60, MP_oper %% 60)) %>%
+  mutate(PIR_sum = sum(PIR)) %>%
+  ungroup() %>%
+  select(Season, Player.x, GP, MP_oper_def, PIR_sum) %>%
+  rename(MP = MP_oper_def) %>%
+  # To convert the minutes into numeric:
+  mutate(MP = round(as.numeric(ms(MP), unit = "mins"))) %>%
+  distinct() %>%
+  mutate(MP_avg = round(MP / GP))  %>%
+  mutate(PIR_avg = round(PIR_sum / GP, 1)) %>% 
+  arrange(desc(Season), desc(GP))
+```
+
+```{r pir-intervals, include=FALSE}
+# Split the PIR values in several intervals:
+df_gg <- data.frame()
+for (i in 1:length(players)) {
+  print(players[i])
+  df1 <- data_app_acb %>%
+    filter(Compet == "ACB", Type_season == "Regular Season", Player.x == players[i]) %>%
+    select(Season, Date, PIR, Position, Team, Date_birth) 
+  
+  df2 <- df1 %>%
+    mutate(PIR_interv = ifelse(PIR >= 40, "40+", 
+                            ifelse(PIR >= 30 & PIR < 40, "[30,40)",
+                                   ifelse(PIR >= 20 & PIR < 30, "[20,30)",
+                                          ifelse(PIR >= 10 & PIR < 20, "[10,20)",
+                                                 ifelse(PIR >= 0 & PIR < 10, "[0,10)", "Negativa")))))) %>%
+    mutate(PIR_interv = factor(PIR_interv, levels = c("40+", "[30,40)", "[20,30)", "[10,20)", 
+                                                "[0,10)", "Negativa"))) %>%
+    mutate(Player = players[i])
+  
+  df_gg <- rbind(df_gg, df2)
+}
+
+# Write correct names:
+players_new <- players
+#players_new[c(1:3, 5, 7:11)] <- c("Abalde, Alberto", "Alocén, Carlos", "Barreiro, Jonathan", 
+#                                  "Díaz, Alberto", "Fernández, Jaime", "García, Marc", 
+#                                  "García, Sergi", "López-Arostegui, Xabier", "Paulí, Oriol")
+players_new[c(4, 7, 9, 13)] <- c("Burjanadze, Beqa", "Cvetkovic, Aleksandar", 
+                                 "Dimitrijevic, Nenad", "Hlinason, Tryggvi")
+
+df_gg1 <- df_gg %>%
+  mutate(Player = plyr::mapvalues(Player, 
+                                  from = players,
+                                  to = players_new))
+
+df_gg2 <- df_gg1 %>%
+  group_by(Player, Season) %>%
+  add_count(PIR) %>%
+  mutate(PIR1 = ifelse(n == 1, 
+                       paste(PIR, " (", n, " vez)", sep = ""),
+                       paste(PIR, " (", n, " veces)", sep = ""))) %>%
+  rename(Equipo = Team, Temporada_regular = Season) %>%
+  mutate(Player_nac = paste(Player, " (Fecha de nacimiento: ", Date_birth, ")", sep = "")) %>%
+  ungroup() %>%
+  mutate(Temporada_regular = as.factor(Temporada_regular), 
+         Player = as.factor(Player),
+         Season1 = as.numeric(Temporada_regular),
+         Equipo = plyr::mapvalues(Equipo, from = "Sevilla", to = "Betis")) 
+
+df_gg3 <- df_gg2 %>%
+  rename(Valorac = PIR, PIR = PIR1)
+```
+
+## Valoraciones obtenidas por cada jugador 
+
+<details><summary>Belemene, Romaric</summary>
+<p>
+
+```{r p1-table, echo=FALSE}
+tab1 <- table_mp_pir(df02, players[1])
+kable(tab1, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 14) 
+```
+
+```{r p1, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[1])
+```
+
+Romaric Belemene ha jugado al menos 30 partidos en las dos últimas temporadas, lo que indica que es tenido en cuenta en la rotación de sus equipos, aunque su promedio de minutos es ciertamente escaso. Eso se traduce también en sus valoraciones, las cuales son en su mayoría negativas o cercanas a 0. Su temporada pasada fue un poco mejor, hizo 8 o más de valoración en cinco partidos.
+</p>
+</details>
+
+<details><summary>Birgander, Simon</summary>
+<p>
+
+```{r p2-table, echo=FALSE}
+tab2 <- table_mp_pir(df02, players[2])
+kable(tab2, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p2, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[2])
+```
+
+Simon Birgander fue elegido en el mejor quinteto joven de la Liga Endesa 2017-18, en la que jugó 30 partidos, promediando 16 minutos y 5.7 de valoración. Esta temporada había comenzado a muy buen nivel, pero a causa de una lesión solo ha podido jugar 13 partidos. Pese a ello, le ha dado tiempo a incrementar su valoración media hasta casi 8.
+</p>
+</details>
+
+<details><summary>Brussino, Nico</summary>
+<p>
+
+```{r p3-table, echo=FALSE}
+tab3 <- table_mp_pir(df02, players[3])
+kable(tab3, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p3, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[3])
+```
+
+Nico Brussino ha jugado 33 partidos esta temporada, en la que ha subido su valoración media hasta 5.1. En el gráfico de valoraciones se aprecia esta mejora especialmente en las tres veces que ha valorado más de 20. Sin embargo, la siguiente mejor valoración ha sido 13 y hasta en diez partidos valoró 0 o negativo, lo cual manifiesta su irregularidad en el juego. 
+</p>
+</details>
+
+<details><summary>Burjanadze, Beqa</summary>
+<p>
+```{r p4-table, echo=FALSE}
+tab4 <- table_mp_pir(df02, players[4])
+kable(tab4, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 14)
+```
+
+```{r p4, echo=FALSE, fig.width=11, fig.height=6}
+plot_pir_interv(df_gg3, players_new[4])
+```
+
+Las dos últimas temporadas en las que ha jugado Beqa Burjanadze ha estado a gran nivel (la temporada 2017-18 no jugó por lesión), consiguiendo un promedio de más de 12 de valoración en ambas. En esta temporada en particular, ha valorado 20 o más en ocho partidos, llegando hasta 37 en un partido.  
+</p>
+</details>
+
+<details><summary>Cancar, Vlatko</summary>
+<p>
+```{r p5-table, echo=FALSE}
+tab5 <- table_mp_pir(df02, players[5])
+kable(tab5, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p5, echo=FALSE, fig.width=8}
+plot_pir_interv(df_gg3, players_new[5])
+```
+
+Vlatko Cancar ha jugado todos los partidos de la liga regular y ha subido sus promedios de minutos y valoración. Su progreso se aprecia claramente en su gráfico. Ha valorado 15 o más en doce partidos. En el aspecto a mejorar se encuentran tres partidos con valoración negativa y 0 en otros tres.
+</p>
+</details>
+
+<details><summary>Cate, Emanuel</summary>
+<p>
+```{r p6-table, echo=FALSE}
+tab6 <- table_mp_pir(df02, players[6])
+kable(tab6, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p6, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[6])
+```
+
+En su tercera temporada en la Liga Endesa (en la 2017-18 jugó en el CB Prat de la LEB Oro), Emanuel Cate ha jugado todos los partidos de la temporada regular, en los que ha promediado 15 minutos por encuentro y casi 7 de valoración, sus mejores números hasta la fecha. Su progreso constante se observa en las veces que ha conseguido 10 o más de valoración, ya que en la 2016-2017 fue en dos partidos, mientras que esta lo ha logrado en nueve. 
+</p>
+</details>
+
+<details><summary>Cvetkovic, Aleksandar</summary>
+<p>
+```{r p7-table, echo=FALSE}
+tab7 <- table_mp_pir(df02, players[7])
+kable(tab7, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p7, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[7], text_label = 2)
+```
+
+Tras la temporada pasada, en la que Aleksandar Cvetkovic bajó notablemente sus números (valorando solo 4.2 de promedio y negativo hasta en nueve partidos), en esta temporada ha vuelto a los buenos números que hizo en la 2016-2017, incluso incrementándolos, tanto en partido jugados como en promedio de minutos y de valoración. Además, ha logrado 20 o más de valoración en seis partidos.
+</p>
+</details>
+
+<details><summary>Diagne, Moussa</summary>
+<p>
+```{r p8-table, echo=FALSE}
+tab8 <- table_mp_pir(df02, players[8])
+kable(tab8, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 11)
+```
+
+```{r p8, echo=FALSE, fig.width=12, fig.height=7}
+plot_pir_interv(df_gg3, players_new[8])
+```
+
+La evolución de Moussa Diagne sigue en línea ascencente. Desde la temporada 2015-2016 en la que bajó sus números jugando en el FC Barcelona, en las tres últimas siempre ha mejorado su promedio de minutos y valoración de la temporada anterior. Su gráfico de valoraciones pone en relieve su gran labor esta campaña. Por primera vez en su carrera ha superado los 30 de valoración y lo ha hecho en dos ocasiones. Además ha hecho 20 o más en otros cinco partidos y no ha valorado negativo en ninguno. 
+</p>
+</details>
+
+<details><summary>Dimitrijevic, Nenad</summary>
+<p>
+```{r p9-table, echo=FALSE}
+tab9 <- table_mp_pir(df02, players[9])
+kable(tab9, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p9, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[9])
+```
+
+Nenad Dimitrijevic continúa con su progreso. Por primera vez en su carrera ha jugado todos los partidos de liga regular, participando 14 minutos y valorando 5.7 por encuentro. También por primera vez ha conseguido valorar más de 20 en un partido (22 dos veces) y ha superado los 12 en otros tres partidos. Por el contrario, ha valorado negativo en seis partidos, llegando incluso a un -7.
+</p>
+</details>
+
+<details><summary>Eriksson, Marcus</summary>
+<p>
+```{r p10-table, echo=FALSE}
+tab10 <- table_mp_pir(df02, players[10])
+kable(tab10, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 10)
+```
+
+```{r p10, echo=FALSE, fig.width=13, fig.height=7}
+plot_pir_interv(df_gg3, players_new[10])
+```
+
+Marcus Eriksson presenta una larga trayectoria en la competición en la que ha demostrado su calidad. Ya en la temporada 2013-2014 con apenas 20 años jugó 33 partidos con el Manresa en los que promedió 8 de valoración con cinco partidos de 20 o más. En la 2014-15 disputó un partido y se lesionó para toda la temporada. Desde entonces lleva mejorando sus números cada temporada que pasa. Sus números esta temporada son particularmente relevantes. Ha conseguido su mejor promedio de valoración con 12. En un partido alcanzó los 31 y en otros tres superó los 22. En dos partidos ha valorado negativo.  
+</p>
+</details>
+
+<details><summary>Garino, Patricio</summary>
+<p>
+```{r p11-table, echo=FALSE}
+tab11 <- table_mp_pir(df02, players[11])
+kable(tab11, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p11, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[11])
+```
+
+Patricio Garino ha participado en menos partidos esta temporada respecto a la anterior, pero en promedio ha jugado más minutos y ha hecho más valoración. La temporada pasada superó los 10 de valoración en tres partidos, mientras que en la recién terminada lo ha conseguido en siete. Por el contrario, aunque ha reducido el número de encuentros con valoración negativa, todavía han sido cuatro.
+</p>
+</details>
+
+<details><summary>Hakanson, Ludde</summary>
+<p>
+```{r p12-table, echo=FALSE}
+tab12 <- table_mp_pir(df02, players[12])
+kable(tab12, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 13)
+```
+
+```{r p12, echo=FALSE, fig.width=11, fig.height=7}
+plot_pir_interv(df_gg3, players_new[12])
+```
+
+Ludde Hakanson destacó en la temporada 2015-2016 en la que promedió 12.6 de valoración en solo 17 partidos. Sin embargo, en las tres temporadas siguientes, pese a que ha jugado muchos partidos, sus números no han vuelto a ser tan buenos y de hecho esta temporada han sido peores que la anterior. Solo en dos partidos ha llegado a los 15 de valoración y hasta en 14 partidos ha valorado 2 o menos.
+</p>
+</details>
+
+<details><summary>Hlinason, Tryggvi</summary>
+<p>
+```{r p13-table, echo=FALSE}
+tab13 <- table_mp_pir(df02, players[13])
+kable(tab13, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p13, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[13])
+```
+
+Esta temporada, Tryggvi Hlinason ha participado en 33 partidos en los que ha jugado 13 minutos por encuentro. Pese a ello, no ha logrado buenos números. Solo en un partido superó los 10 de valoración y hasta en nueve ocasiones valoró negativo, llegando a un -7. 
+</p>
+</details>
+
+<details><summary>Niang, Mamadou</summary>
+<p>
+```{r p14-table, echo=FALSE}
+tab14 <- table_mp_pir(df02, players[14])
+kable(tab14, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 13)
+```
+
+```{r p14, echo=FALSE, fig.width=12}
+plot_pir_interv(df_gg3, players_new[14])
+```
+
+Mamadou Niang lleva cuatro temporadas haciendo números bastante similares, tanto en minutos disputados como en valoración por partido. Esta temporada ha jugado su máximo de partidos hasta ahora con 31 y ha conseguido su récord de valoración con 19. Sin embargo, su valoración más repetida ha sido 4 (en seis ocasiones).
+</p>
+</details>
+
+<details><summary>Pangos, Kevin</summary>
+<p>
+```{r p15-table, echo=FALSE}
+tab15 <- table_mp_pir(df02, players[15])
+kable(tab15, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p15, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[15])
+```
+
+Kevin Pangos ha vuelto esta temporada a jugar en la Liga Endesa en las filas del FC Barcelona, tras hacerlo en la 2015-2016 con el Herbalife Gran Canaria. Ha disputado todos los partidos de liga regular, pero sus promedios de minutos y valoración han sido menores que aquellos de la 2015-2016. Pese a ello, ha conseguido su tope de valoración con 33. En general se ha movido entre los 6 y 10 de valoración.
+</p>
+</details>
+
+<details><summary>Poirier, Vincent</summary>
+<p>
+```{r p16-table, echo=FALSE}
+tab16 <- table_mp_pir(df02, players[16])
+kable(tab16, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p16, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[16])
+```
+
+Vincent Poirier ha superado sus registros de la temporada pasada, que ya eran notables. No se ha perdido ningún partido y ha promediado 21 minutos y 13.4 de valoración por encuentro. Ha conseguido sus dos mejores valoraciones con 26 y 34 y en total ha hecho 20 o más en diez partidos. Tuvo dos partidos deficientes en los que valoró -4 y -6. 
+</p>
+</details>
+
+<details><summary>Radicevic, Nikola</summary>
+<p>
+```{r p17-table, echo=FALSE}
+tab17 <- table_mp_pir(df02, players[17])
+kable(tab17, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 10)
+```
+
+```{r p17, echo=FALSE, fig.width=11}
+plot_pir_interv(df_gg3, players_new[17])
+```
+
+Nikola Radicevic había presentado buenos números en las dos últimas temporadas rondando los 7 de valoración de media. En cambio, esta temporada en la que se incorporó de nuevo al Herbalife Gran Canaria en noviembre de 2018, apenas ha valorado 1.5 de media por partido. Solo una vez ha podido superar los 10 de valoración y en cambio valoró 2 o menos en once partidos, llegando a los -7. 
+</p>
+</details>
+
+<details><summary>Radoncic, Dino</summary>
+<p>
+```{r p18-table, echo=FALSE}
+tab18 <- table_mp_pir(df02, players[18])
+kable(tab18, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 14)
+```
+
+```{r p18, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[18])
+```
+
+Dino Radoncic empezó la temporada jugando para el San Pablo Burgos y la terminó en el UCAM Murcia. En total ha jugado 33 partidos de la liga regular, en los que ha promediado 15 minutos y 4.9 de valoración por encuentro, números mejores que la pasada temporada. Sus números con el UCAM Murcia son destacables ya que ha conseguido valorar 15 o más en tres partidos. Su mejor actuación con el Burgos fue de 14.
+
+</p>
+</details>
+
+<details><summary>Redivo, Lucio</summary>
+<p>
+```{r p19-table, echo=FALSE}
+tab19 <- table_mp_pir(df02, players[19])
+kable(tab19, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p19, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[19])
+```
+
+Lucio Redivo ha calcado prácticamente sus números de la temporada pasada. En la 2017-2018 consiguió un 38 de valoración, mientras que en esta su máxima ha sido de 21. En el resto de valoraciones se aprecian números muy similares en ambas temporadas.
+</p>
+</details>
+
+<details><summary>Rupnik, Luka</summary>
+<p>
+```{r p20-table, echo=FALSE}
+tab20 <- table_mp_pir(df02, players[20])
+kable(tab20, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p20, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[20])
+```
+
+Por tercera temporada, Luka Rupnik se mueve en unos registros similares: suele jugar casi todos los partidos de la liga regular y sus promedios oscilan entre los 14 y 17 minutos y los 4 y 6 de valoración. Destaca esta temporada que ha repetido su récord de valoración de 22 en un partido. Su valoración más repetida ha sido 0 (en 5 partidos).
+</p>
+</details>
+
+<details><summary>Sakho, Jordan</summary>
+<p>
+```{r p21-table, echo=FALSE}
+tab21 <- table_mp_pir(df02, players[21])
+kable(tab21, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p21, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[21])
+```
+
+Jordan Sakho ha jugado 25 partidos en los que ha duplicado sus minutos respecto a la temporada pasada. También ha dado un paso adelante en sus valoraciones, promediando 6.7 por encuentro. Hasta en doce partidos ha valorado 10 o más. En cambio, ha valorado negativo en seis encuentros.
+</p>
+</details>
+
+<details><summary>Sedekerskis, Tadas</summary>
+<p>
+```{r p22-table, echo=FALSE}
+tab22 <- table_mp_pir(df02, players[22])
+kable(tab22, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 15)
+```
+
+```{r p22, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[22])
+```
+
+Tadas Sedekerskis no ha tenido mucho protagonismo esta temporada, si bien es cierto que pese a su juventud esta ya ha sido la cuarta temporada en la que ha disputado partidos en la liga. En términos de partidos disputados, alcanzó los 18 en la 2016-2017 pero en las dos últimas campañas no ha llegado a los 10. Sus valoraciones han sido escasas, promediando en total apenas 2.7.
+</p>
+</details>
+
+<details><summary>Smits, Rolands</summary>
+<p>
+```{r p23-table, echo=FALSE}
+tab23 <- table_mp_pir(df02, players[23])
+kable(tab23, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 11)
+```
+
+```{r p23, echo=FALSE, fig.width=12}
+plot_pir_interv(df_gg3, players_new[23])
+```
+
+Rolands Smits protagonizó una mejora continuada en el Fuenlabrada, lo que propició este año su incorporación al FC Barcelona. Con una competencia mayor, no ha podido aproximarse a los números de la temporada pasada en la que jugó todos los partidos y valoró 9.7 por partido, consiguiendo superar los 15 de valoración hasta en ocho encuentros. Esta temporada no ha pasado de esos 15 y ha valorado 0 o negativo en siete ocasiones. 
+</p>
+</details>
+
+<details><summary>Thomas, Matt</summary>
+<p>
+```{r p24-table, echo=FALSE}
+tab24 <- table_mp_pir(df02, players[24])
+kable(tab24, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p24, echo=FALSE, fig.width=9}
+plot_pir_interv(df_gg3, players_new[24])
+```
+
+Matt Thomas consiguió grandes números la temporada pasada en las filas del Obradoiro, superando los 20 de valoración en siete partidos, con un tope de 34. Esta temporada jugando para el Valencia Basket ha jugado prácticamente el mismo número de partidos pero no ha tenido un papel tan protagonista. Sus números han descendido a los 20 minutos y 8.7 de valoración de media por encuentro. Es de resaltar que este año ha conseguido su segunda y tercera mejor valoración en su trayectoria en la Liga Endesa con 28 y 29. 
+</p>
+</details>
+
+<details><summary>Tobey, Mike</summary>
+<p>
+```{r p25-table, echo=FALSE}
+tab25 <- table_mp_pir(df02, players[25])
+kable(tab25, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p25, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[25])
+```
+
+El análisis de Mike Tobey se parece al de Matt Thomas. El año pasado gozó de un rol protagonista en el Iberostar Tenerife, con el que jugó 33 partidos, promedió 21 minutos y 12 de valoración por encuentro y hasta en seis partidos consiguió 20 o más de valoración. Este año sus números también son destacables, aunque han descendido tanto en partidos como en sus promedios de minutos y valoración. Ha conseguido 20 o más de valoración en cuatro encuentros.
+</p>
+</details>
+
+<details><summary>Todorovic, Dejan</summary>
+<p>
+```{r p26-table, echo=FALSE}
+tab26 <- table_mp_pir(df02, players[26])
+kable(tab26, format = "html", caption = "") %>% kable_styling(full_width = FALSE, font_size = 11)
+```
+
+```{r p26, echo=FALSE, fig.width=11}
+plot_pir_interv(df_gg3, players_new[26])
+```
+
+Dejan Todorovic había dado un salto de calidad la pasada temporada jugando para el RETAbet Bilbao Basket con el que consiguió un promedio de 8.7 de valoración por encuentro, superando los 21 en tres partidos. Por desgracia, no ha podido jugar en toda esta temporada debido a una triada que sufrió en septiembre de 2018.
+</p>
+</details>
+
+<details><summary>Vildoza, Luca</summary>
+<p>
+```{r p27-table, echo=FALSE}
+tab27 <- table_mp_pir(df02, players[27])
+kable(tab27, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p27, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[27])
+```
+
+Luca Vildoza ha progresado notablemente esta temporada. Ha jugado 32 partidos en los que ha promediado 24 minutos y 10.2 de valoración, superando ampliamente sus registros de la temporada pasada. Este año ha llegado hasta los 32 de valoración y en total ha hecho 15 o más en once partidos.
+</p>
+</details>
+
+<details><summary>Walker, David</summary>
+<p>
+```{r p28-table, echo=FALSE}
+tab28 <- table_mp_pir(df02, players[28])
+kable(tab28, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
+```
+
+```{r p28, echo=FALSE, fig.width=10}
+plot_pir_interv(df_gg3, players_new[28])
+```
+
+David Walker solo se había perdido dos partidos las dos últimas temporadas. En cambio, esta campaña solo ha podido jugar 16 encuentros debido a una lesión en el hombro. Pese a ello, ha promediado 7.2 de valoración por partido, aunque sigue sin acercarse a los 8.4 de la 2016-2017. En esa campaña hizo 19 o más en cinco partidos. Por el contrario, su mejor valoración este año ha sido 18. 
+
+</p>
+</details>
+
+## Conclusiones
+
+Este estudio se ha centrado en todos aquellos jugadores extranjeros nacidos a partir de 1993, que han jugado en la Liga Endesa ACB al menos dos temporadas. El análisis de sus valoraciones teniendo en cuenta también el número de partidos jugados permite extraer distintas conclusiones.
+
+Entre los jugadores que han disputado más de 20 partidos y que han mejorado sus prestaciones se encuentran Nico Brussino, Vlatko Cancar, Emanuel Cate, Aleksandar Cvetkovic, Moussa Diagne, Nenad Dimitrijevic, Marcus Eriksson, Patricio Garino, Vincent Poirier, Dino Radoncic, Jordan Sakho y Luca Vildoza. Se debe resaltar que no todos han mejorado de la misma manera, por ejemplo Brussino ha pasado de 3.9 a 5.1 de promedio de valoración, mientras que Cancar ha pasado de 4.7 a 9.3. En consecuencia, para valorar la evolución de jugador se debe tener en cuenta los valores de temporadas previas. Otros jugadores que han mejorado sus números pero jugando menos de 20 partidos han sido Simon Birgander y David Walker.
+
+Entre los jugadores que se han movido en registros similares se encuentran Beqa Burjanadze (que ha seguido haciendo valoraciones altas), Tryggvi Hlinason, Mamadou Niang, Lucio Redivo y Luka Rupnik.
+
+En el grupo de jugadores que han empeorado sus números aparecen Romaric Belemene, Ludde Hakanson,  Nikola Radicevic y Tadas Sedekerskis. Es importante mencionar los casos de Kevin Pangos, Rolands Smits, Matt Thomas y Mike Tobey, que aunque han empeorado sus números, esto puede ser debido a que están jugando en equipos grandes en los que se tienen que repartir más los minutos con jugadores de mucha calidad.
+
+Por último, Dejan Todorovic no está incluido en ninguno de los anteriores grupos ya que su lesión le ha tenido alejado de las canchas toda la temporada.
+
+A partir de los anteriores comentarios, el siguiente diagrama permite visualizar la proporción de jugadores que han mejorado (en color verde), que han mantenido números similares a los de la temporada pasada (en color naranja) o que los han empeorado (en color rojo). La mayor parte de los jugadores analizados han mejorado o al menos igualado sus prestaciones.
+
+```{r persongraph, echo=FALSE, fig.width=10, message=FALSE}
+library(personograph)
+valores <- list()
+valores[[1]] <- 0.52  # round(14/27, 2)
+valores[[2]] <- 0.18 # round(5/27, 2)
+valores[[3]] <- 0.3 # round(8/27, 2)
+names(valores) <- c("mejor", "igual", "peor")
+personograph(valores, n.icons = 27, colors = list(peor = "red", igual = "orange", mejor = "lightgreen"), draw.legend = TRUE, fig.cap = "", icon.style = 3)
+```
+
+## Datos y software
+
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+
+*Guillermo Vinue*\
+*guillermovinue@gmail.com*

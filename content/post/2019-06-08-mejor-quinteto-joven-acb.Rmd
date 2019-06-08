@@ -1,0 +1,93 @@
+---
+title: Mejor quinteto joven de la Liga Endesa 2018-19 de acuerdo a su valoración media.
+author: Guillermo Vinue
+date: '2019-06-08'
+slug: mejor-quinteto-joven-acb
+categories: ["R"]
+tags: ["valoración", "jóvenes"]
+---
+
+```{r tables, include=FALSE,message=FALSE}
+knitr::opts_knit$set(bookdown.internal.label = FALSE)
+```
+
+<br>
+
+* Este estudio investiga las valoraciones de los jugadores que optan a formar parte del mejor quinteto joven de la Liga Endesa ACB.
+
+* De acuerdo a los datos, Nenad Dimitrijevic y Emanuel Cate podrían haber entrado en ese mejor quinteto.
+
+El mejor quinteto joven de la Liga Endesa 2018-2019 se compone de jugadores nacidos a partir de 1997, que hayan jugado al menos 10 minutos de media y al menos la mitad de los partidos de la temporada regular.
+
+Los análisis realizados para la nueva generación [de jugadores españoles](https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/) y [de jugadores extranjeros](https://www.sportsandvisualdata.com/2019/06/02/next-gen-foreign/) permiten explorar su evolución a lo largo de las temporadas en base a las valoraciones conseguidas en cada partido. De todos estos jugadores, los que cumplen los requisitos para optar a estar en el mejor quinteto joven son Carlos Alocén, Jonathan Barreiro, Vlatko Cancar, Emanuel Cate, Nenad Dimitrijevic, Tryggvi Hlinason, Xabier López-Arostegui, Dino Radoncic, Jordan Sakho y Santiago Yusta.
+
+La siguiente tabla muestra la media de la valoración por partido de estos jugadores ordenados de mayor a menor media. Los cinco jugadores más valorados han sido Cancar, Yusta, Cate, Shako y Dimitrijevic.
+
+El [mejor quinteto joven de la Liga Endesa 2018-19](http://www.acb.com/redaccion.php?id=146658) lo han formado Alocén, Yusta, López-Aróstegui, Cancar y Sahko. De acuerdo a los números, Dimitrijevic y Cate podrían haber entrado en lugar de Alocén y López-Aróstegui.
+
+
+```{r packages, include=FALSE,message=FALSE}
+# Load packages:
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+```
+
+```{r data, include=FALSE}
+# Load data:
+load("data_scripts/data_app_acb.RData")
+```
+
+```{r joven-table, echo=FALSE}
+# Get ACB data:
+df01 <- data_app_acb %>% 
+  filter(Compet == "ACB", Type_season == "Regular Season", Season == "2018-2019")
+
+# Select players of interest:
+players <- c("Alocen, Carlos", "Barreiro, J.", "Cancar, Vlatko", "Cate, Emanuel",
+             "Dimitrijevic, N.", "Hlinason, T.", "Lopez-Arostegui, X", "Radoncic, Dino",
+             "Sakho, Jordan", "Yusta, Santiago")
+
+# Compute total and averaged minutes and PIR:
+df02 <- df01 %>% 
+  filter(Player.x %in% players) %>%
+  group_by(Season, Player.x, CombinID) %>%
+  mutate(GP = n()) %>%
+  mutate(MP_oper = ifelse(all(MP == "0"), 
+                          0,
+                          sum(as.numeric(as.period(ms(MP), unit = "sec")), na.rm = TRUE))) %>%
+  mutate(MP_oper_def = sprintf("%02d:%02d", MP_oper %/% 60, MP_oper %% 60)) %>%
+  mutate(PIR_sum = sum(PIR)) %>%
+  ungroup() %>%
+  select(Season, Player.x, Position, Date_birth, GP, MP_oper_def, PIR_sum) %>%
+  rename(MP = MP_oper_def) %>%
+  # To convert the minutes into numeric:
+  mutate(MP = round(as.numeric(ms(MP), unit = "mins"))) %>%
+  distinct() %>%
+  mutate(MP_avg = round(MP / GP))  %>%
+  mutate(PIR_avg = round(PIR_sum / GP, 2)) %>% 
+  arrange(desc(PIR_avg))
+
+df03 <- df02 %>%
+  select(Season, Player.x, Position, Date_birth, GP, MP_avg, PIR_avg) %>%
+  rename(Temporada = Season, Jugador = Player.x, Posición = Position, 
+         Fecha_nacimiento = Date_birth, Partidos = GP, 
+         Minutos_por_partido = MP_avg, Valoración_por_partido = PIR_avg) %>%
+  mutate(Jugador = as.character(Jugador))
+
+df03[c(5:7,9,10),2] <- c("Dimitrijevic, Nenad", "Alocén, Carlos",
+                         "López-Arostegui, Xabier", "Barreiro, Jonathan",
+                         "Hlinason, Tryggvi")
+df03[,3] <- c("Alero", "Alero", "Ala-pívot", "Pívot", "Base", 
+              "Base", "Alero", "Ala-pívot", "Alero", "Pívot")
+
+kable(df03, format = "html", caption = "", align = rep("c", 7)) %>% 
+  kable_styling(full_width = FALSE, font_size = 11) 
+```
+
+## Datos y software
+
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+
+*Guillermo Vinue*\
+*guillermovinue@gmail.com*

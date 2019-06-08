@@ -350,6 +350,18 @@ Por su parte, López-Arostegui y Paulí han conseguido números muy parecidos a 
 
 Por último, entre los jugadores que han empeorado más su rendimiento se encuentran Sebas Saiz y Edgar Vicedo. Lo mismo se podría decir de Sergi García, pero en su caso se debe más a la alta competencia en el puesto de base en el Valencia Basket y en consecuencia, a los pocos minutos que ha jugado. Otros jugadores que también han bajado sus prestaciones son Alberto Abalde, Ilimane Diop y Jonathan Barreiro.
 
+A partir de los anteriores comentarios, el siguiente diagrama permite visualizar la proporción de jugadores que han mejorado (en color verde), que han mantenido números similares a los de la temporada pasada (en color naranja) o que los han empeorado (en color rojo). Se puede decir que existe el mismo número de jugadores que han mejorado que los que han empeorado.
+
+```{r persongraph, echo=FALSE, fig.width=10, message=FALSE}
+library(personograph)
+valores <- list()
+valores[[1]] <- 0.43  # round(6/14, 2)
+valores[[2]] <- 0.14  # round(2/14, 2)
+valores[[3]] <- 0.43  # round(6/14, 2)
+names(valores) <- c("mejor", "igual", "peor")
+personograph(valores, n.icons = 14, colors = list(peor = "red", igual = "orange", mejor = "lightgreen"), draw.legend = TRUE, fig.cap = "", icon.style = 3)
+```
+
 ## Datos y software
 
 El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
