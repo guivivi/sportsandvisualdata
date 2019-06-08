@@ -406,7 +406,7 @@ tab19 <- table_mp_pir(df02, players[19])
 kable(tab19, format = "html", caption = "") %>% kable_styling(full_width = FALSE)
 ```
 
-```{r p19, echo=FALSE, fig.width=9}
+```{r p19, echo=FALSE, fig.width=9, fig.height=6}
 plot_pir_interv(df_gg3, players_new[19])
 ```
 

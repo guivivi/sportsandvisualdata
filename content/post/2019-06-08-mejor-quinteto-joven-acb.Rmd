@@ -19,7 +19,7 @@ knitr::opts_knit$set(bookdown.internal.label = FALSE)
 
 El mejor quinteto joven de la Liga Endesa 2018-2019 se compone de jugadores nacidos a partir de 1997, que hayan jugado al menos 10 minutos de media y al menos la mitad de los partidos de la temporada regular.
 
-Los análisis realizados para la nueva generación [de jugadores españoles](https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/) y [de jugadores extranjeros](https://www.sportsandvisualdata.com/2019/06/02/next-gen-foreign/) permiten explorar su evolución a lo largo de las temporadas en base a las valoraciones conseguidas en cada partido. De todos estos jugadores, los que cumplen los requisitos para optar a estar en el mejor quinteto joven son Carlos Alocén, Jonathan Barreiro, Vlatko Cancar, Emanuel Cate, Nenad Dimitrijevic, Tryggvi Hlinason, Xabier López-Arostegui, Dino Radoncic, Jordan Sakho y Santiago Yusta.
+Los análisis realizados para la nueva generación [de jugadores españoles](https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/) y [de jugadores extranjeros](https://www.sportsandvisualdata.com/2019/06/07/next-gen-foreign/) permiten explorar su evolución a lo largo de las temporadas en base a las valoraciones conseguidas en cada partido. De todos estos jugadores, los que cumplen los requisitos para optar a estar en el mejor quinteto joven son Carlos Alocén, Jonathan Barreiro, Vlatko Cancar, Emanuel Cate, Nenad Dimitrijevic, Tryggvi Hlinason, Xabier López-Arostegui, Dino Radoncic, Jordan Sakho y Santiago Yusta.
 
 La siguiente tabla muestra la media de la valoración por partido de estos jugadores ordenados de mayor a menor media. Los cinco jugadores más valorados han sido Cancar, Yusta, Cate, Shako y Dimitrijevic.
 
