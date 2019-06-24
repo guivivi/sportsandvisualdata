@@ -13,5 +13,5 @@ Esta página web surge con el objetivo de divulgar diferentes análisis de datos
 
 This website aims to disseminate different data analysis, mainly related to basketball, but also to other sports and other industrial fields. Especial emphasis will be done in the visualization of the results, with plots that will help to obtain as much information as possible, in an easy and intuitive way. The website posts will be written either in Spanish or in English. In order to contribute to the development of free software, all code and data will be available so that the results can be reproduced.
 
-*Guillermo Vinue*\
+*Guillermo Vinue, PhD*\
 *guillermovinue@gmail.com*

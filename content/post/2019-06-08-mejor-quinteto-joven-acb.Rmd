@@ -1,6 +1,6 @@
 ---
 title: Mejor quinteto joven de la Liga Endesa 2018-19 de acuerdo a su valoración media.
-author: Guillermo Vinue
+author: Guillermo Vinué
 date: '2019-06-08'
 slug: mejor-quinteto-joven-acb
 categories: ["R"]
@@ -89,5 +89,5 @@ kable(df03, format = "html", caption = "", align = rep("c", 7)) %>%
 
 El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
 
-*Guillermo Vinue*\
+*Guillermo Vinué*\
 *guillermovinue@gmail.com*

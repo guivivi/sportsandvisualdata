@@ -1,0 +1,52 @@
+---
+title: Buscador de estadísticas de baloncesto / Search engine of basketball statistics.
+author: Guillermo Vinué
+date: '2019-06-24'
+slug: buscador-datos-baloncesto
+categories: ["R"]
+tags: ["buscador", "datos"]
+runtime: shiny
+---
+
+```{r tables, include=FALSE,message=FALSE}
+knitr::opts_knit$set(bookdown.internal.label = FALSE)
+```
+
+<br>
+
+La siguiente aplicación interactiva es un buscador de las estadísticas conseguidas por cualquier jugador contra un determinado equipo. Los datos disponibles proceden de la ACB, la Euroliga y la Eurocup. La app está disponible en español y en inglés y necesita unos segundos para cargar todos los datos.
+
+Los pasos a seguir son los siguientes:
+
+1. Elegir una liga y un formato de competición (liga regular, playoffs, etc).
+2. Elegir un jugador, un equipo y el tipo de estadísticas a calcular (totales o promedio).
+
+Las tablas resultantes muestran la información biográfica básica del jugador, sus estadísticas totales o promedio y en cada uno de sus partidos contra el rival seleccionado. La pestaña "Información" contiene un enlace a un documento con el significado de las abreviaturas de las estadísticas.
+
+Si la app no se muestra bien en la pantalla, [aquí está su enlace original.](https://www.uv.es/vivigui/AppPlayerSummary.html)
+
+**IN ENGLISH:**
+
+The following interactive app is a search engine of the statistics achieved by any player against a certain rival. The data come from the Spanish first division league (ACB), Euroleague and Eurocup. The app is available in Spanish and English and needs a few seconds to load all the data.
+
+The procedure is as follows:
+
+1. Choose a league and a round of competition (regular season, playoffs, etc).
+2. Choose a player, a team and the type of the stats to be computed (total or average).
+
+The resulting tables show the basic player's biographic data, the total or average stats and each game stats. The "Information" tab contains a link to a document with the meaning of the abbreviations for the statistics.
+
+If this app doesn't appear well on the screen, [here is the link to the app.](https://www.uv.es/vivigui/AppPlayerSummary.html)
+
+<iframe src="https://gvinue.shinyapps.io/AppPlayerSummary/" width=700 height=1000" scrolling="yes" frameborder="no"></iframe>
+
+## Datos y software (Data and software)
+
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+
+**IN ENGLISH:**
+
+The material to reproduce this analysis is available at [this link.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+
+*Guillermo Vinué*\
+*guillermovinue@gmail.com*

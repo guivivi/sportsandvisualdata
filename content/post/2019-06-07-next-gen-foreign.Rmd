@@ -1,6 +1,6 @@
 ---
 title: La Next-Gen de jugadores extranjeros en el baloncesto español. Análisis de su evolución.
-author: Guillermo Vinue
+author: Guillermo Vinué
 date: '2019-06-07'
 slug: next-gen-foreign
 categories: ["R"]
@@ -578,5 +578,5 @@ personograph(valores, n.icons = 27, colors = list(peor = "red", igual = "orange"
 
 El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
 
-*Guillermo Vinue*\
+*Guillermo Vinué*\
 *guillermovinue@gmail.com*
