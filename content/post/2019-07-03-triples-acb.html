@@ -1,0 +1,449 @@
+---
+title: La triple obsesión.
+author: Guillermo Vinué
+date: '2019-07-03'
+slug: triples-acb
+categories: ["R"]
+tags: ["triples", "acb"]
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p><br></p>
+<ul>
+<li><p>En la Liga Endesa ACB cada vez se lanzan más triples. En la temporada 2018-2019 se ha batido de nuevo el récord de triples intentados.</p></li>
+<li><p>El Obradoiro y el Tenerife destacan por su tendencia a tirar más de tres que de dos.</p></li>
+</ul>
+<p>Por influencia de la NBA, el baloncesto europeo moderno y, en particular el español, se ha transformado en los últimos años en un juego menos vistoso, en el que muchos ataques terminan con un triple, convirtiéndose los partidos por momentos en verdaderos concursos de triple.</p>
+<p>El siguiente gráfico muestra el número total de triples intentandos en cada temporada, comenzando desde la 1996-1997, en la que se fijó el número de equipos a 18 (en la 2008-2009 y la 2016-2017 hubo 17). Desde la 2010-2011, en todas las temporadas se han lanzado más triples que la anterior, con la excepción de la 2016-2017.</p>
+<p><img src="/post/2019-07-03-triples-acb_files/figure-html/ACB-threes-season-1.png" width="672" /></p>
+<p>Esta nueva manera de jugar se basa principalmente en tres paradigmas:</p>
+<ol style="list-style-type: decimal">
+<li>Un tiro de tres vale un 50% más que uno de dos.</li>
+<li>Es más eficiente tirar de tres o cerca del aro. Los tiros a media distancia se deben evitar en la mayoría de casos.</li>
+<li>Tirar más de tres que de dos ofrece más posibilidades de ganar el partido.</li>
+</ol>
+<p>Estas ideas solo se pueden dar por válidas <strong>si se anota el triple</strong>. Sin embargo, da la sensación de que este hecho fundamental se olvida. Por supuesto que un triple siempre va a ser mejor que una canasta de dos, pero no se debe obviar que anotar un triple es generalmente más difícil que un tiro de dos. Solo los grandes especialistas son capaces de anotar con frecuencia tiros lejanos.</p>
+<p>El siguiente gráfico muestra el número de partidos en los que cada equipo de la ACB ha tirado más de tres que de dos durante la temporada regular 2018-2019, junto con el número de victorias y derrotas en esos partidos. Los equipos están ordenados de mayor a menor número de partidos. Al lado del nombre del equipo aparece su clasificación final en la liga regular y entre paréntesis, el número total de victorias.</p>
+<p><img src="/post/2019-07-03-triples-acb_files/figure-html/threes-team-1.png" width="672" /></p>
+<p>Los resultados son interesantes:</p>
+<ul>
+<li><p>Solo el Madrid, el Barcelona y el Baskonia han obtenido más victorias que derrotas en aquellos partidos en los que han tirado más de tres que de dos, pero hay que tener en cuenta que además éstos han sido muy pocos (cuatro el Madrid, dos el Barcelona y uno el Baskonia).</p></li>
+<li><p>Todos los demás equipos han perdido más partidos de los que han ganado siguiendo esta estrategia (o como mucho, han ganado los mismos que han perdido, como es el caso del Tenerife y el Murcia).</p></li>
+<li><p>De hecho, los casos del Tenerife y, especialmente del Obradoiro, son llamativos. El Obradoiro ha tirado más triples que canastas de dos en 17 partidos (la mitad de los que ha jugado) y de ellos ha perdido 13. El Tenerife por su parte basó su juego en tirar más de tres que de dos en 16 partidos, de los que perdió y ganó 8.</p></li>
+<li><p>Solo el Zaragoza ha tirado en todos sus partidos más de dos que de tres.</p></li>
+</ul>
+<p>Este análisis es relevante por varios motivos. En primer lugar, permite averiguar el número de partidos en los que cada equipo ha tirado más triples que canastas de dos. Además, permite comprobar si tirar más de tres que de dos se traduce en ganar esos partidos.</p>
+<div id="afecta-esta-manera-de-jugar-a-los-jugadores-el-caso-sebas-saiz." class="section level2">
+<h2>¿Afecta esta manera de jugar a los jugadores? El caso Sebas Sáiz.</h2>
+<p><a href="https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/">En el análisis de los jugadores jóvenes españoles</a> se observó que los números de Sebas Sáiz habían descendido notablemente esta temporada jugando en el Tenerife, en comparación con los que consiguió el año pasado en las filas del Burgos. Las siguientes tablas muestran sus estadísticas promedio y totales de partidos jugados, minutos, tiros de dos y de tres intentados, rebotes ofensivos, asistencias y valoración en ambas temporadas. El descenso en sus prestaciones es muy claro (sí que ha mejorado sus registros en los triples intentados).</p>
+<table class="table" style="font-size: 13px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+Promedio
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Nombre
+</th>
+<th style="text-align:center;">
+Equipo
+</th>
+<th style="text-align:center;">
+Temporada
+</th>
+<th style="text-align:center;">
+Partidos
+</th>
+<th style="text-align:center;">
+Min.
+</th>
+<th style="text-align:center;">
+T2I
+</th>
+<th style="text-align:center;">
+T3I
+</th>
+<th style="text-align:center;">
+RebOfen.
+</th>
+<th style="text-align:center;">
+Asist.
+</th>
+<th style="text-align:center;">
+Valorac.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Saiz, Sebas
+</td>
+<td style="text-align:center;">
+Burgos
+</td>
+<td style="text-align:center;">
+2017-2018
+</td>
+<td style="text-align:center;">
+34
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+5.6
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+<td style="text-align:center;">
+1.9
+</td>
+<td style="text-align:center;">
+0.4
+</td>
+<td style="text-align:center;">
+10.9
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Saiz, Sebas
+</td>
+<td style="text-align:center;">
+Tenerife
+</td>
+<td style="text-align:center;">
+2018-2019
+</td>
+<td style="text-align:center;">
+32
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+3.3
+</td>
+<td style="text-align:center;">
+0.4
+</td>
+<td style="text-align:center;">
+0.9
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+<td style="text-align:center;">
+4.3
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="font-size: 13px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+Totales
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Nombre
+</th>
+<th style="text-align:center;">
+Equipo
+</th>
+<th style="text-align:center;">
+Temporada
+</th>
+<th style="text-align:center;">
+Partidos
+</th>
+<th style="text-align:center;">
+Min.
+</th>
+<th style="text-align:center;">
+T2I
+</th>
+<th style="text-align:center;">
+T3I
+</th>
+<th style="text-align:center;">
+RebOfen.
+</th>
+<th style="text-align:center;">
+Asist.
+</th>
+<th style="text-align:center;">
+Valorac.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Saiz, Sebas
+</td>
+<td style="text-align:center;">
+Burgos
+</td>
+<td style="text-align:center;">
+2017-2018
+</td>
+<td style="text-align:center;">
+34
+</td>
+<td style="text-align:center;">
+612
+</td>
+<td style="text-align:center;">
+191
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+63
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+371
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Saiz, Sebas
+</td>
+<td style="text-align:center;">
+Tenerife
+</td>
+<td style="text-align:center;">
+2018-2019
+</td>
+<td style="text-align:center;">
+32
+</td>
+<td style="text-align:center;">
+370
+</td>
+<td style="text-align:center;">
+105
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+29
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+138
+</td>
+</tr>
+</tbody>
+</table>
+<p>El entrenador del Tenerife este año ha sido Txus Vidorreta. La siguiente tabla muestra los equipos entrenados por Vidorreta a lo largo de su trayectoria en la ACB y la clasificación de los mismos respecto a la cantidad total de triples intentados. Según se observa, especialmente en los tres últimos años los equipos de Vidorreta han sido de los que más triples han lanzado.</p>
+<table class="table" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Equipo
+</th>
+<th style="text-align:center;">
+Temporada
+</th>
+<th style="text-align:center;">
+T3I
+</th>
+<th style="text-align:center;">
+Clasificación
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Tenerife
+</td>
+<td style="text-align:center;">
+2018-2019
+</td>
+<td style="text-align:center;">
+1004
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Valencia
+</td>
+<td style="text-align:center;">
+2017-2018
+</td>
+<td style="text-align:center;">
+883
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Tenerife
+</td>
+<td style="text-align:center;">
+2016-2017
+</td>
+<td style="text-align:center;">
+878
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Estudiantes
+</td>
+<td style="text-align:center;">
+2014-2015
+</td>
+<td style="text-align:center;">
+731
+</td>
+<td style="text-align:center;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Estudiantes
+</td>
+<td style="text-align:center;">
+2013-2014
+</td>
+<td style="text-align:center;">
+699
+</td>
+<td style="text-align:center;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Estudiantes
+</td>
+<td style="text-align:center;">
+2012-2013
+</td>
+<td style="text-align:center;">
+754
+</td>
+<td style="text-align:center;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Alicante
+</td>
+<td style="text-align:center;">
+2011-2012
+</td>
+<td style="text-align:center;">
+775
+</td>
+<td style="text-align:center;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bilbao
+</td>
+<td style="text-align:center;">
+2008-2009
+</td>
+<td style="text-align:center;">
+765
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bilbao
+</td>
+<td style="text-align:center;">
+2007-2008
+</td>
+<td style="text-align:center;">
+684
+</td>
+<td style="text-align:center;">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bilbao
+</td>
+<td style="text-align:center;">
+2006-2007
+</td>
+<td style="text-align:center;">
+726
+</td>
+<td style="text-align:center;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bilbao
+</td>
+<td style="text-align:center;">
+2005-2006
+</td>
+<td style="text-align:center;">
+559
+</td>
+<td style="text-align:center;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bilbao
+</td>
+<td style="text-align:center;">
+2004-2005
+</td>
+<td style="text-align:center;">
+681
+</td>
+<td style="text-align:center;">
+10
+</td>
+</tr>
+</tbody>
+</table>
+<p>Dado que Sebas Sáiz es principalmente un pívot que juega por dentro, seguramente la decisión que tomó el Madrid de cederlo a un equipo en el que su entrenador propone tirar muchos triples, no parece haber resultado la más conveniente.</p>
+</div>
+<div id="datos-y-software" class="section level2">
+<h2>Datos y software</h2>
+<p>El material para reproducir este estudio se encuentra en <a href="https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts">este enlace.</a></p>
+<p><em>Guillermo Vinué</em><br />
+<em><a href="mailto:guillermovinue@gmail.com">guillermovinue@gmail.com</a></em></p>
+</div>

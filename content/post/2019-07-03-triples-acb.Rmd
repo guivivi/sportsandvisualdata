@@ -1,0 +1,249 @@
+---
+title: La triple obsesión.
+author: Guillermo Vinué
+date: '2019-07-03'
+slug: triples-acb
+categories: ["R"]
+tags: ["triples", "acb"]
+---
+
+```{r tables, include=FALSE,message=FALSE}
+knitr::opts_knit$set(bookdown.internal.label = FALSE)
+```
+
+<br>
+
+* En la Liga Endesa ACB cada vez se lanzan más triples. En la temporada 2018-2019 se ha batido de nuevo el récord de triples intentados.
+
+* El Obradoiro y el Tenerife destacan por su tendencia a tirar más de tres que de dos.
+
+Por influencia de la NBA, el baloncesto europeo moderno y, en particular el español, se ha transformado en los últimos años en un juego menos vistoso, en el que muchos ataques terminan con un triple, convirtiéndose los partidos por momentos en verdaderos concursos de triple. 
+
+El siguiente gráfico muestra el número total de triples intentandos en cada temporada, comenzando desde la 1996-1997, en la que se fijó el número de equipos a 18 (en la 2008-2009 y la 2016-2017 hubo 17). Desde la 2010-2011, en todas las temporadas se han lanzado más triples que la anterior, con la excepción de la 2016-2017.
+
+
+```{r packages, include=FALSE,message=FALSE}
+# Load packages:
+library(tidyverse)
+library(BAwiR)
+library(forcats)
+library(reshape2)
+library(kableExtra)
+```
+
+```{r data, include=FALSE}
+# Load data and source functions:
+load("data_scripts/data_app_acb.RData")
+source("data_scripts/do_recode_teams.R")
+```
+
+```{r ACB-threes-season, echo=FALSE, fig.width=7}
+# ACB data:
+df0 <- data_app_acb
+
+# Number of threes every season:
+df_pl <- df0 %>% 
+  dplyr::filter(Type_season == "Regular Season") %>%
+  group_by(Season) %>%
+  summarise(sum_Three = sum(ThreePA), 
+            num_teams = length(unique(Team)), 
+            num_games = (num_teams - 1) * 2) %>%
+  arrange(desc(Season))
+df_pl1 <- df_pl %>%
+  filter(Season %in% paste(1996:2018, 1997:2019, sep = "-"))
+
+ggplot(df_pl1, aes(x = Season, y = sum_Three, group = 1)) +
+  #geom_bar(stat = "identity", fill = "#FF9999", colour = "black") +
+  geom_point() +
+  geom_line() +
+  geom_text(aes(label = sum_Three), vjust = -1, size = 1.9, color = "red") +
+  labs(x = "", y = "Triples intentados") +
+  scale_y_continuous(breaks = seq(0, 15000, 2500)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+Esta nueva manera de jugar se basa principalmente en tres paradigmas:
+
+1. Un tiro de tres vale un 50% más que uno de dos.
+2. Es más eficiente tirar de tres o cerca del aro. Los tiros a media distancia se deben evitar en la mayoría de casos.
+3. Tirar más de tres que de dos ofrece más posibilidades de ganar el partido.
+
+Estas ideas solo se pueden dar por válidas **si se anota el triple**. Sin embargo, da la sensación de que este hecho fundamental se olvida. Por supuesto que un triple siempre va a ser mejor que una canasta de dos, pero no se debe obviar que anotar un triple es generalmente más difícil que un tiro de dos. Solo los grandes especialistas son capaces de anotar con frecuencia tiros lejanos. 
+
+El siguiente gráfico muestra el número de partidos en los que cada equipo de la ACB ha tirado más de tres que de dos durante la temporada regular 2018-2019, junto con el número de victorias y derrotas en esos partidos. Los equipos están ordenados de mayor a menor número de partidos. Al lado del nombre del equipo aparece su clasificación final en la liga regular y entre paréntesis, el número total de victorias.
+
+```{r threes-team, echo=FALSE, fig.width=7, message=FALSE, warning=FALSE}
+# Number of games with more threes than twos of every team:
+df1 <- df0 %>% 
+  dplyr::filter(Season == "2018-2019", Type_season == "Regular Season") %>%
+  dplyr::select(GameID, Game, GameRes, Team, Player.x, TwoPA, ThreePA)
+
+df2 <- df1 %>%
+  mutate(Game = factor(Game, levels = unique(Game)),
+         ID = as.integer(Game))
+df3 <- df2 %>%
+  group_by(ID, Game, GameRes, Team) %>%
+  summarise(TwosPA = sum(TwoPA), 
+            ThreesPA = sum(ThreePA)) %>%
+  mutate(Home = strsplit(as.character(Game), " - ")[[1]][1], 
+         Away = strsplit(as.character(Game), " - ")[[1]][2]) %>%
+  separate(GameRes, c("Score_home", "Score_visitor"), remove = FALSE) %>%
+  mutate(Score_home = as.numeric(Score_home),
+         Score_visitor = as.numeric(Score_visitor),
+         Win = ifelse(Score_home > Score_visitor, Home, Away))
+
+df3_home <- df3 %>% ungroup() %>% select(Home) %>% rename(Team = Home)
+df3_home1 <- do_recode_teams("ACB", df3_home)
+
+df3_away <- df3 %>% ungroup() %>% select(Away) %>% rename(Team = Away)
+df3_away1 <- do_recode_teams("ACB", df3_away)
+
+df3_win <- df3 %>% ungroup() %>% select(Win) %>% rename(Team = Win)
+df3_win1 <- do_recode_teams("ACB", df3_win)
+
+df3$Home <- df3_home1$Team
+df3$Away <- df3_away1$Team
+df3$Win <- df3_win1$Team
+
+df4 <- data.frame()
+for (i in sort(unique(df3$Team))) {
+  #print(i)
+  aux <- df3 %>% 
+    filter(Team == i, ThreesPA > TwosPA) %>%
+    mutate(partidos = nrow(.))
+  if (nrow(aux) == 0) {
+    aux1 <- data.frame(Team = i, partidos = 0, ganados = 0, perdidos = 0)
+  }else{
+    aux$ganados <- sum(aux$Team == aux$Win)
+    aux$perdidos <- sum(aux$Team != aux$Win)
+    aux1 <- aux %>% 
+      ungroup() %>% 
+      select(Team, partidos, ganados, perdidos) %>% 
+      distinct()    
+  }
+  
+  df4 <- rbind(df4, aux1)
+}
+df5 <- df4 %>% 
+  arrange(desc(partidos))
+df6 <- melt(df5)
+equipos <- unique(df6[df6$variable == "partidos", "Team"])
+df6$Team <- factor(df6$Team, levels = equipos)
+pos_vict <- c("15º (11)", "9º (17)", "5º (21)", "7º (18)", "4º (23)", "10º (16)", "14º (12)", 
+              "1º (28)", "18º (9)", "16º (11)", "13º (13)", "12º (14)", "17º (10)", "8º (17)", 
+              "2º (27)", "3º (26)", "11º (15)", "6º (18)")
+equipos_clas <- paste(equipos, pos_vict)
+
+df7 <- df6 %>%
+  mutate(Team = plyr::mapvalues(Team, from = equipos, to = equipos_clas))
+                             
+ggplot(data = df7, aes(x = variable, y = value)) +
+  facet_wrap(~Team) +
+  geom_bar(stat = "identity", color = "blue", fill = "white") +
+  geom_text(aes(label = value), position = position_dodge(width = 0.9), vjust = -0.2, size = 3) +
+  scale_y_continuous(limits = range(0, max(df6$value) + 10)) + 
+  theme(axis.title = element_blank(), axis.text.x = element_text(size = 6)) +
+  labs(title = "  ACB Temporada regular 2018-2019. \n  Número de partidos de cada equipo con más tiros de tres que de dos. \n  Victorias y derrotas en esos partidos.")
+```
+
+Los resultados son interesantes:
+
+* Solo el Madrid, el Barcelona y el Baskonia han obtenido más victorias que derrotas en aquellos partidos en los que han tirado más de tres que de dos, pero hay que tener en cuenta que además éstos han sido muy pocos (cuatro el Madrid, dos el Barcelona y uno el Baskonia). 
+
+* Todos los demás equipos han perdido más partidos de los que han ganado siguiendo esta estrategia (o como mucho, han ganado los mismos que han perdido, como es el caso del Tenerife y el Murcia).
+
+* De hecho, los casos del Tenerife y, especialmente del Obradoiro, son llamativos. El Obradoiro ha tirado más triples que canastas de dos en 17 partidos (la mitad de los que ha jugado) y de ellos ha perdido 13. El Tenerife por su parte basó su juego en tirar más de tres que de dos en 16 partidos, de los que perdió y ganó 8.
+
+* Solo el Zaragoza ha tirado en todos sus partidos más de dos que de tres.
+
+Este análisis es relevante por varios motivos. En primer lugar, permite averiguar el número de partidos en los que cada equipo ha tirado más triples que canastas de dos. Además, permite comprobar si tirar más de tres que de dos se traduce en ganar esos partidos.
+
+## ¿Afecta esta manera de jugar a los jugadores? El caso Sebas Sáiz.
+
+[En el análisis de los jugadores jóvenes españoles](https://www.sportsandvisualdata.com/2019/06/02/next-gen-esp/) se observó que los números de Sebas Sáiz habían descendido notablemente esta temporada jugando en el Tenerife, en comparación con los que consiguió el año pasado en las filas del Burgos. Las siguientes tablas muestran sus estadísticas promedio y totales de partidos jugados, minutos, tiros de dos y de tres intentados, rebotes ofensivos, asistencias y valoración en ambas temporadas. El descenso en sus prestaciones es muy claro (sí que ha mejorado sus registros en los triples intentados).
+
+```{r sebas-saiz-media, echo=FALSE, message=FALSE}
+seb_sa <- get_stats_seasons(df0, "ACB", c("Saiz, Sebas"), 
+                            c("GP", "MP", "TwoPA", "ThreePA", "ORB", "AST", "PIR"), 
+                            "Regular Season", TRUE, FALSE)
+seb_sa1 <- seb_sa$df_gg %>% select(-Age)
+colnames(seb_sa1) <- c("Nombre", "Equipo", "Temporada", "Partidos", "Min.", 
+                       "T2I", "T3I", "RebOfen.", "Asist.", "Valorac.")
+kable(seb_sa1 , format = "html", caption = "Promedio", align = rep("c", 10)) %>% 
+  kable_styling(full_width = FALSE, font_size = 13) 
+```
+
+```{r sebas-saiz-total, echo=FALSE, message=FALSE}
+seb_sa_total <- df0 %>% filter(Type_season == "Regular Season", 
+                               Season %in% c("2017-2018", "2018-2019"), 
+                               Player.x == "Saiz, Sebas")
+seb_sa_total1 <- do_add_adv_stats(seb_sa_total)
+# By choosing Average instead of Total in do_stats I get seb_sa1.
+seb_sa_total2 <- do_stats(seb_sa_total1, "Total", c("2017-2018", "2018-2019"), "ACB", "Regular Season") %>%
+  ungroup() %>%
+  select(Name, Team, Season, GP, MP, TwoPA, ThreePA, ORB, AST, PIR)
+colnames(seb_sa_total2) <- c("Nombre", "Equipo", "Temporada", "Partidos", "Min.", 
+                       "T2I", "T3I", "RebOfen.", "Asist.", "Valorac.")
+kable(seb_sa_total2 , format = "html", caption = "Totales", align = rep("c", 10)) %>% 
+  kable_styling(full_width = FALSE, font_size = 13) 
+```
+
+El entrenador del Tenerife este año ha sido Txus Vidorreta. La siguiente tabla muestra los equipos entrenados por Vidorreta a lo largo de su trayectoria en la ACB y la clasificación de los mismos respecto a la cantidad total de triples intentados. Según se observa, especialmente en los tres últimos años los equipos de Vidorreta han sido de los que más triples han lanzado.
+
+```{r vidorreta, echo=FALSE, message=FALSE}
+# Threes of teams coached by Txus Vidorreta (only seasons where Vidorreta coached 
+# the entire season in the same team):
+# http://www.acb.com/entrenador.php?id=AEX
+df_team <- data.frame()
+seasons <- paste(2004:2018, 2005:2019, sep = "-")
+for (i in 1:length(seasons)) {
+  #print(i)
+  df_team_loop <- do_stats_teams(df0, seasons[i], "ACB", "Regular Season")
+  df_team_total <- df_team_loop$df_team_total
+  df_team_total$Season <- seasons[i]  
+  
+  df_team <- rbind(df_team, df_team_total)
+}
+
+df_team1 <- df_team %>%
+  select(Team, ThreePA, Season) %>%
+  filter(!Season %in% c("2009-2010", "2010-2011", "2015-2016")) %>%
+  mutate(Team = ifelse(Season %in% c("2004-2005", "2005-2006", "2006-2007", 
+                                     "2007-2008", "2008-2009") & Team == "Bilbao", 
+                       paste(Team, " (Vidorreta)", sep = ""),
+                       ifelse(Season %in% "2011-2012" & Team == "Alicante", 
+                              paste(Team, " (Vidorreta)", sep = ""),
+                              ifelse(Season %in% c("2012-2013", "2013-2014", "2014-2015") 
+                                     & Team == "Estudiantes",
+                              paste(Team, " (Vidorreta)", sep = ""),
+                                    ifelse(Season %in% c("2016-2017", "2018-2019") & Team == "Tenerife",
+                                            paste(Team, " (Vidorreta)", sep = ""),
+                                                  ifelse(Season %in% c("2017-2018") & Team == "Valencia",
+                                                          paste(Team, " (Vidorreta)", sep = ""), 
+                              Team))))))
+
+df_team2 <- df_team1 %>%
+  group_by(Season) %>%
+  arrange(Season, desc(ThreePA)) %>% 
+  mutate(Rkg = ifelse(grepl("Vidorreta", Team), grep("Vidorreta", Team), Team))
+
+df_team3 <- df_team2 %>%
+  filter(grepl("Vidorreta", Team)) %>%
+  arrange(desc(Season)) %>%
+  select(Team, Season, ThreePA, Rkg) %>%
+  rename(Clasific. = Rkg) %>%
+  mutate(Team = gsub("\\(Vidorreta\\)", "", Team))
+colnames(df_team3)[1:4] <- c("Equipo", "Temporada", "T3I", "Clasificación")
+kable(df_team3 , format = "html", caption = "", align = rep("c", 4)) %>% 
+  kable_styling(full_width = FALSE, font_size = 14) 
+```
+
+Dado que Sebas Sáiz es principalmente un pívot que juega por dentro, seguramente la decisión que tomó el Madrid de cederlo a un equipo en el que su entrenador propone tirar muchos triples, no parece haber resultado la más conveniente.
+
+## Datos y software
+
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+
+*Guillermo Vinué*\
+*guillermovinue@gmail.com*
