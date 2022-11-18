@@ -40,7 +40,7 @@ Anyone interested in this app can contact me at the email indicated below.
 
 ## Datos y software (Data and software)
 
-El material para reproducir este estudio se puede descargar en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
+El material para reproducir este estudio se encuentra en [este enlace.](https://github.com/guivivi/sportsandvisualdata/tree/master/content/post/data_scripts)
 
 **IN ENGLISH:**
 
