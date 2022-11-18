@@ -25,8 +25,6 @@ Las tablas resultantes muestran la información biográfica básica del jugador,
 
 Cualquier persona interesada en esta aplicación, puede contactarme en el correo electrónico indicado al final del documento.
 
-<!-- Si la app no se muestra bien en la pantalla, [aquí está su enlace original.](https://www.uv.es/vivigui/AppPlayerSummary.html)-->
-
 **IN ENGLISH:**
 
 This reports aims to inform about an interactive app that I have developed as a search engine of the statistics achieved by any player against a certain rival. The data come from the Spanish first division league (ACB), Euroleague and Eurocup. The app is available in Spanish and English and needs a few seconds to load all the data.
@@ -39,10 +37,6 @@ The procedure is as follows:
 The resulting tables show the basic player's biographic data, the total or average stats and each game stats. The "Information" tab contains a link to a document with the meaning of the abbreviations for the statistics.
 
 Anyone interested in this app can contact me at the email indicated below.
-
-<!-- If this app doesn't appear well on the screen, [here is the link to the app.](https://www.uv.es/vivigui/AppPlayerSummary.html)
-
-<iframe src="https://gvinue.shinyapps.io/AppPlayerSummary/" width=700 height=1000" scrolling="yes" frameborder="no"></iframe> -->
 
 ## Datos y software (Data and software)
 
